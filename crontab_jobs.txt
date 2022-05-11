@@ -1,0 +1,46 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').
+# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+#*/2 * * * * /home/pi/truncate_logfile.sh >> /home/pi/truncate_logfile.joblog
+#1/2 * * * * /home/pi/run_CreateAPRS.sh >> /home/pi/CreateAPRSfile.joblog
+#1/2 * * * * /usr/bin/python2 /home/pi/CreateAPRS_File.py >> /home/pi/CreateAPRSfile.joblog
+
+#this truncates the logfile and runs the Python program to parse the WX data into APRS format
+*/2 * * * * /bin/sh /home/pi/run_CreateAPRS.sh >> CreateAPRS.joblog 2>&1 
+#*/1 * * * * touch /home/pi/touch.log
+
+#This checks to see if the weather process is running and if not it reboots
+#*/5 * * * * /home/pi/check_wx_process.sh
+
+#This creates the PNG file for the web server
+#*/2 * * * /usr/bin/python2 /home/pi/PlotTheData.py &
+
+#system stats for Grafana - odd minutes
+1-59/2 * * * * /home/pi/rpi-stats-influx.py >> rpi-stats-influx.joblog 2>&1
+
+#Run the weather station code even minutes
+*/2 * * * * /home/pi/run_one_shot.sh 
+
+# This starts the programs on reboot
+#@reboot sleep 30 &&  /bin/sh /home/pi/run_wx.sh >> run_wx.joblog 2>&1
+
